@@ -1,0 +1,2 @@
+# Copy to deepseek-local.properties and paste your key locally; do not commit or chat the key.
+DEEPSEEK_API_KEY=

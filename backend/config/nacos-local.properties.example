@@ -1,0 +1,5 @@
+# Copy to nacos-local.properties after starting the loopback-only Nacos container.
+# The development backend listens only on 127.0.0.1, so it reads Nacos config but does not advertise an unreachable service address.
+NACOS_ENABLED=true
+NACOS_REGISTER=false
+NACOS_SERVER_ADDR=127.0.0.1:8848

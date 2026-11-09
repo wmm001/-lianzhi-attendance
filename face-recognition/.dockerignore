@@ -1,0 +1,6 @@
+.venv
+__pycache__
+uploads
+face_features.json
+*.whl
+*.log

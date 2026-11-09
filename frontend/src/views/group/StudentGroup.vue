@@ -1,0 +1,6 @@
+<template><div><el-empty v-if="!groups.length" description="老师尚未为你分配小组"/><el-card v-for="group in groups" :key="group.id" class="group-card"><template #header><div class="header"><div><b>{{group.courseName}} · {{group.name}}</b></div><el-tag v-if="group.isLeader" type="success">我是组长，可代组员考勤</el-tag></div></template><el-table :data="group.members" stripe><el-table-column prop="studentId" label="学号"/><el-table-column prop="realName" label="姓名"/><el-table-column label="身份"><template #default="{row}"><el-tag v-if="row.leader">组长</el-tag><span v-else>成员</span></template></el-table-column><el-table-column label="人脸"><template #default="{row}"><el-tag :type="row.faceRegistered?'success':'info'">{{row.faceRegistered?'已录入':'未录入'}}</el-tag></template></el-table-column></el-table><el-alert v-if="group.isLeader" class="tip" type="info" :closable="false" title="你可以在人脸签到页开启小组快速检测，为本课程组员逐一完成考勤。"/></el-card></div></template>
+<script setup>
+import {ref,onMounted} from 'vue';import {ElMessage} from 'element-plus';import {getMyGroup} from '@/api/group'
+const groups=ref([]);onMounted(async()=>{try{groups.value=await getMyGroup()||[]}catch(e){if(!e.messageShown)ElMessage.error(e.message||'小组信息加载失败')}})
+</script>
+<style scoped>.group-card+.group-card{margin-top:18px}.header{display:flex;justify-content:space-between;align-items:center;gap:12px}.tip{margin-top:18px}</style>

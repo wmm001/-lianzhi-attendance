@@ -1,0 +1,4 @@
+# Copy to redis-local.properties after starting the loopback-only Redis container.
+REDIS_ENABLED=true
+REDIS_HOST=127.0.0.1
+REDIS_PORT=6379

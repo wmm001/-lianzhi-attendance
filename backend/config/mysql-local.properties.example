@@ -1,0 +1,4 @@
+﻿# Copy to mysql-local.properties and fill in your local MySQL password.
+# Do not commit mysql-local.properties or share the real password in chat.
+DB_USERNAME=lianzhi_app
+DB_PASSWORD=

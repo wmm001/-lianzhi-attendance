@@ -1,0 +1,6 @@
+node_modules
+dist
+.env.local
+config/local-https
+public/local-ca.*
+*.log

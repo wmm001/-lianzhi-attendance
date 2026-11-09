@@ -1,0 +1,6 @@
+target
+.m2
+config
+data
+uploads
+*.log
