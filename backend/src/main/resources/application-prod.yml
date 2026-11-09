@@ -1,0 +1,53 @@
+server:
+  port: 8080
+  address: 0.0.0.0
+
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: 86400000
+  refresh-expiration: 604800000
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  redis:
+    host: ${REDIS_HOST:redis}
+    port: ${REDIS_PORT:6379}
+    password: ${REDIS_PASSWORD}
+    timeout: 2s
+
+attendance:
+  redis:
+    enabled: ${REDIS_ENABLED:true}
+  nacos:
+    enabled: ${NACOS_ENABLED:false}
+    register: ${NACOS_REGISTER:false}
+    server-addr: ${NACOS_SERVER_ADDR:nacos:8848}
+
+# 人脸识别服务配置
+face:
+  recognition:
+    url: ${FACE_RECOGNITION_URL}
+    timeout: 10000
+
+# 文件上传配置
+file:
+  upload:
+    path: /app/uploads/
+    face-image-path: /app/uploads/face-images/
+  url-prefix: /api/uploads/
+
+# 日志配置
+logging:
+  level:
+    com.attendance: info
+
+app:
+  allowed-origins: ${APP_ALLOWED_ORIGINS}
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl

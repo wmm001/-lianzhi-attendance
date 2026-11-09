@@ -1,0 +1,19 @@
+<template><el-card class="session" :class="{compact}"><template v-if="!compact" #header><b>限时签到</b></template><p v-if="state.endsAt">{{remaining>0?'签到进行中':'签到已结束'}} · {{formatTime(state.endsAt)}} 截止 <strong v-if="remaining>0">剩余 {{Math.floor(remaining/60)}}分{{remaining%60}}秒</strong></p><p v-else>尚未发起限时签到。</p><div v-if="manager" class="options"><el-select v-model="preset"><el-option v-for="n in [5,10,15]" :key="n" :label="`${n}分钟`" :value="n"/><el-option label="自定义" :value="0"/></el-select><el-input-number v-if="preset===0" v-model="custom" :min="1" :max="240"/><el-checkbox v-model="enableLate">设置迟到阈值</el-checkbox><el-input-number v-if="enableLate" v-model="late" :min="1" :max="Math.max(1,minutes-1)"/><span v-if="enableLate">分钟后记迟到</span><el-button v-if="!state.endsAt" type="primary" :loading="busy" @click="start">发起签到</el-button><template v-else><el-button type="primary" plain :loading="busy" @click="modify">修改时间</el-button><el-button type="danger" plain :loading="busy" @click="cancel">取消签到</el-button></template></div><small v-if="manager">修改时间按“从现在起”的剩余分钟数计算；取消后会清除本场签到产生的非请假记录。</small></el-card></template>
+<script setup>
+import {ref,computed,watch,onUnmounted} from 'vue'
+import {ElMessage,ElMessageBox} from 'element-plus'
+import {getAttendanceSession,startAttendanceSession,updateAttendanceSession,cancelAttendanceSession} from '@/api/attendance'
+import dayjs from 'dayjs'
+const props=defineProps({courseId:[String,Number],manager:Boolean,compact:Boolean}),state=ref({}),preset=ref(5),custom=ref(20),enableLate=ref(false),late=ref(3),busy=ref(false),remaining=ref(0)
+let poll,timer,deadline=0,sequence=0
+const minutes=computed(()=>preset.value||custom.value)
+const formatTime=value=>dayjs(value).format('YYYY-MM-DD HH:mm:ss')
+function accept(data){state.value=data;const server=new Date(data.serverTime).getTime();deadline=performance.now()+Math.max(0,new Date(data.endsAt).getTime()-server);tick()}
+function tick(){remaining.value=Number.isFinite(deadline)?Math.max(0,Math.ceil((deadline-performance.now())/1000)):0}
+async function load(){const id=++sequence;if(!props.courseId)return;try{const data=await getAttendanceSession(props.courseId);if(id===sequence)accept(data)}catch(e){if(!e.messageShown)ElMessage.error('签到时间加载失败')}}
+async function start(){busy.value=true;try{accept(await startAttendanceSession(props.courseId,{minutes:minutes.value,lateMinutes:enableLate.value?late.value:undefined}));ElMessage.success('签到已发起')}catch(e){if(!e.messageShown)ElMessage.error(e.message||'发起失败')}finally{busy.value=false}}
+async function modify(){busy.value=true;try{accept(await updateAttendanceSession(props.courseId,{minutes:minutes.value,lateMinutes:enableLate.value?late.value:undefined}));ElMessage.success('签到时间已修改')}catch(e){if(!e.messageShown)ElMessage.error(e.message||'修改失败')}finally{busy.value=false}}
+async function cancel(){try{await ElMessageBox.confirm('取消后，本场已产生的签到记录也会清除。确定取消吗？','取消签到',{type:'warning'});busy.value=true;await cancelAttendanceSession(props.courseId);state.value={};remaining.value=0;ElMessage.success('签到已取消')}catch(e){if(e!=='cancel'&&e!=='close'&&!e.messageShown)ElMessage.error(e.message||'取消失败')}finally{busy.value=false}}
+watch(()=>props.courseId,()=>{state.value={};load()},{immediate:true});poll=setInterval(()=>{if(!busy.value)load()},15000);timer=setInterval(tick,1000);onUnmounted(()=>{sequence++;clearInterval(timer);clearInterval(poll)})
+</script>
+<style scoped>.session{margin-bottom:18px}.options{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.options .el-select{width:140px}small{display:block;color:#706668;margin-top:12px}strong{margin-left:12px;color:var(--brand)}.compact{margin:8px 0;box-shadow:none;border:0;background:#fdf7f5;font-size:12px}.compact :deep(.el-card__body){padding:8px}.compact p{margin:0}.compact strong{display:block;margin:4px 0 0}</style>

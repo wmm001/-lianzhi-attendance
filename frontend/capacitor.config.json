@@ -1,0 +1,23 @@
+{
+  "appId": "com.attendance.campus",
+  "appName": "湖大人脸考勤",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https",
+    "cleartext": true
+  },
+  "android": {
+    "allowMixedContent": true
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 1200,
+      "backgroundColor": "#F6F1ED",
+      "showSpinner": false
+    },
+    "StatusBar": {
+      "style": "LIGHT",
+      "backgroundColor": "#9B272D"
+    }
+  }
+}

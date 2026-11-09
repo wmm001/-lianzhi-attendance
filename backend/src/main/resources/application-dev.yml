@@ -1,0 +1,37 @@
+server:
+  port: 8080
+  address: 127.0.0.1
+
+spring:
+  config:
+    import: optional:file:./config/mysql-local.properties,optional:file:./config/deepseek-local.properties,optional:file:./config/redis-local.properties,optional:file:./config/nacos-local.properties
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/lianzhi_attendance?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: ${DB_USERNAME:lianzhi_app}
+    password: ${DB_PASSWORD:}
+  redis:
+    host: ${REDIS_HOST:127.0.0.1}
+    port: ${REDIS_PORT:6379}
+    timeout: 2s
+
+attendance:
+  redis:
+    enabled: ${REDIS_ENABLED:false}
+  nacos:
+    enabled: ${NACOS_ENABLED:false}
+    register: ${NACOS_REGISTER:false}
+    server-addr: ${NACOS_SERVER_ADDR:127.0.0.1:8848}
+
+# 人脸识别服务配置
+face:
+  recognition:
+    url: http://localhost:5000
+    timeout: 10000
+
+# 文件上传配置
+file:
+  upload:
+    path: ./uploads/
+    face-image-path: ./uploads/face-images/
+  url-prefix: http://localhost:8080/api/uploads/
